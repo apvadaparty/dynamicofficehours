@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
   </head>
   <body>
-    <p>Entrance form list 1</p>
+    <p>Entrance form list 2</p>
 
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
@@ -119,13 +119,14 @@
       }
       async function getUserInfo() {
         let url = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json';
-        let out;
-          fetch(url)
-          .then(res => res.json())
-          .then(out =>
-            console.log('Checkout this JSON! ', out))
-          .catch(err => { throw err });
-        document.getElementById('userid').innerText = "hello" + out[0];
+        let response = await fetch(url);
+        if (response.ok) { // if HTTP-status is 200-299
+          let userjson = await response.json();
+          console.log('got user info json'); 
+        } else {
+          alert("HTTP-Error: " + response.status);
+        }
+        document.getElementById('userid').innerText = "hello" + userjson[0];
         return;
         
       }
