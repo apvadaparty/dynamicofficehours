@@ -5,14 +5,14 @@
     <meta charset="utf-8" />
   </head>
   <body>
-    <p>Entrance form list</p>
+    <p>Entrance form list 1</p>
 
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
     <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
 
     <pre id="content" style="white-space: pre-wrap;"></pre>
-
+    <pre id="userid" style="white-space: pre-wrap;"></pre>
     <script type="text/javascript">
       /* exported gapiLoaded */
       /* exported gisLoaded */
@@ -116,7 +116,18 @@
           document.getElementById('signout_button').style.visibility = 'hidden';
         }
       }
-
+      async function getUserInfo() {
+        let url = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json';
+        let out;
+          fetch(url)
+          .then(res => res.json())
+          .then(out =>
+            console.log('Checkout this JSON! ', out))
+          .catch(err => { throw err });
+        document.getElementById('userid').innerText = "hello" + out[0];
+        return;
+        
+      }
       /**
        * Print info from entrance form: 
        * https://docs.google.com/spreadsheets/d/1deRIvPARlVQh55WMSI4a6YuJk-32rq-2eQz3_ctnuyE/edit?resourcekey#gid=1804370966
