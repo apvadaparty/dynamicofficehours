@@ -91,6 +91,7 @@
           document.getElementById('signout_button').style.visibility = 'visible';
           document.getElementById('authorize_button').innerText = 'Refresh';
           await listStudents();
+          await getUserInfo();
         };
 
         if (gapi.client.getToken() === null) {
