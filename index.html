@@ -119,6 +119,7 @@
   }
   async function getUserInfo() {
     let url = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json';
+    const token = gapi.client.getToken();
     if (token !== null) {
       console.log("token.access_token", token.access_token);
       url = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token='+String(token.access_token);
