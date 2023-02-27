@@ -118,7 +118,7 @@
         }
       }
       async function getUserInfo() {
-        gapi.auth2.init();
+        gapi.auth2.init({client_id: CLIENT_ID});
         if (auth2.isSignedIn.get()) {
           var profile = auth2.currentUser.get().getBasicProfile();
           console.log('ID: ' + profile.getId());
