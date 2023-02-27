@@ -119,7 +119,7 @@
           document.getElementById('signout_button').style.visibility = 'hidden';
         }
       }
-
+      /*
       function _decodeJwtResponse(token) {
         //from https://stackoverflow.com/questions/38552003/how-to-decode-jwt-token-in-javascript-without-using-a-library
         var base64Url = token.split('.')[1];
@@ -144,6 +144,7 @@
         console.log("Image URL: " + responsePayload.picture);
         console.log("Email: " + responsePayload.email);
       }
+      */
 
       async function getUserInfo() {
         const token = gapi.client.getToken();
