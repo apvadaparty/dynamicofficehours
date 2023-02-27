@@ -129,12 +129,15 @@
     let userjson;
 
     if (response.ok) { // if HTTP-status is 200-299
-      userjson = await response.json();
+      let resp = await response.json();
+      userjson = JSON.parse(resp);
+      console.log('userjson: ', userjson);
+      console.log('family name: ', userjson['family_name']);
       console.log('got user info json');
     } else {
       alert("HTTP-Error: " + response.status);
     }
-    document.getElementById('userid').innerText = "hello" + userjson[0];
+    document.getElementById('userid').innerText = "hello" + userjson;
     return;
 
   }
