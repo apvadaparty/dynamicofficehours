@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
   </head>
   <body>
-    <p>Entrance form list 1</p>
+    <p>Entrance form list 2</p>
 
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
@@ -92,8 +92,8 @@
           document.getElementById('signout_button').style.visibility = 'visible';
           document.getElementById('authorize_button').innerText = 'Refresh';
           await listStudents();
-          await getUserInfo();
-          await handleCredentialResponse(resp);
+          //await getUserInfo();
+          //await handleCredentialResponse(resp);
         };
 
         if (gapi.client.getToken() === null) {
