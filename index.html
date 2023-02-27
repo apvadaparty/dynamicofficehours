@@ -1,175 +1,186 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Entrance form list</title>
-    <meta charset="utf-8" />
-  </head>
-  <body>
-    <p>Entrance form list 2</p>
+<head>
+  <title>Entrance form list</title>
+  <meta charset="utf-8" />
+</head>
+<body>
+<p>Entrance form list 3</p>
 
-    <!--Add buttons to initiate auth sequence and sign out-->
-    <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
-    <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
+<!--Add buttons to initiate auth sequence and sign out-->
+<button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
+<button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
 
-    <pre id="content" style="white-space: pre-wrap;"></pre>
-    <pre id="userid" style="white-space: pre-wrap;"></pre>
-    <script type="text/javascript">
-      /* exported gapiLoaded */
-      /* exported gisLoaded */
-      /* exported handleAuthClick */
-      /* exported handleSignoutClick */
+<pre id="content" style="white-space: pre-wrap;"></pre>
+<pre id="userid" style="white-space: pre-wrap;"></pre>
+<script type="text/javascript">
+  /* exported gapiLoaded */
+  /* exported gisLoaded */
+  /* exported handleAuthClick */
+  /* exported handleSignoutClick */
 
-      // TODO(developer): Set to client ID and API key from the Developer Console
-      const CLIENT_ID = '621076960881-js455nt93hddggchqjh74a8e85hloh1u.apps.googleusercontent.com';
-      const API_KEY = 'AIzaSyDSZJbUt5P2XAWagQ28Om46fNJOCq5dlNI';
+  // TODO(developer): Set to client ID and API key from the Developer Console
+  const CLIENT_ID = '621076960881-js455nt93hddggchqjh74a8e85hloh1u.apps.googleusercontent.com';
+  const API_KEY = 'AIzaSyDSZJbUt5P2XAWagQ28Om46fNJOCq5dlNI';
 
-      // Discovery doc URL for APIs used by the quickstart
-      const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
+  // Discovery doc URL for APIs used by the quickstart
+  const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
 
-      // Authorization scopes required by the API; multiple scopes can be
-      // included, separated by spaces.
-      const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly https://www.googleapis.com/auth/userinfo.profile';
+  // Authorization scopes required by the API; multiple scopes can be
+  // included, separated by spaces.
+  const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly https://www.googleapis.com/auth/userinfo.profile';
 
-      let tokenClient;
-      let gapiInited = false;
-      let gisInited = false;
+  let tokenClient;
+  let gapiInited = false;
+  let gisInited = false;
 
-      document.getElementById('authorize_button').style.visibility = 'hidden';
+  document.getElementById('authorize_button').style.visibility = 'hidden';
+  document.getElementById('signout_button').style.visibility = 'hidden';
+
+  /**
+   * Callback after api.js is loaded.
+   */
+  function gapiLoaded() {
+    gapi.load('client', initializeGapiClient);
+  }
+
+  /**
+   * Callback after the API client is loaded. Loads the
+   * discovery doc to initialize the API.
+   */
+  async function initializeGapiClient() {
+    await gapi.auth2.init({client_id: CLIENT_ID});
+    await gapi.client.init({
+      apiKey: API_KEY,
+      discoveryDocs: [DISCOVERY_DOC],
+    });
+    gapiInited = true;
+    console.log("gapiInited", gapiInited);
+    maybeEnableButtons();
+  }
+
+  /**
+   * Callback after Google Identity Services are loaded.
+   */
+  function gisLoaded() {
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      callback: '', // defined later
+    });
+    gisInited = true;
+    maybeEnableButtons();
+  }
+
+  /**
+   * Enables user interaction after all libraries are loaded.
+   */
+  function maybeEnableButtons() {
+    if (gapiInited && gisInited) {
+      document.getElementById('authorize_button').style.visibility = 'visible';
+    }
+  }
+
+  /**
+   *  Sign in the user upon button click.
+   */
+  function handleAuthClick() {
+    tokenClient.callback = async (resp) => {
+      if (resp.error !== undefined) {
+        throw (resp);
+      }
+      document.getElementById('signout_button').style.visibility = 'visible';
+      document.getElementById('authorize_button').innerText = 'Refresh';
+      await listStudents();
+      await getUserInfo();
+    };
+
+    if (gapi.client.getToken() === null) {
+      // Prompt the user to select a Google Account and ask for consent to share their data
+      // when establishing a new session.
+      tokenClient.requestAccessToken({prompt: 'consent'});
+    } else {
+      // Skip display of account chooser and consent dialog for an existing session.
+      tokenClient.requestAccessToken({prompt: ''});
+    }
+  }
+
+  /**
+   *  Sign out the user upon button click.
+   */
+  function handleSignoutClick() {
+    const token = gapi.client.getToken();
+    if (token !== null) {
+      google.accounts.oauth2.revoke(token.access_token);
+      gapi.client.setToken('');
+      document.getElementById('content').innerText = '';
+      document.getElementById('authorize_button').innerText = 'Authorize';
       document.getElementById('signout_button').style.visibility = 'hidden';
+    }
+  }
+  async function getUserInfo() {
+    if (auth2.isSignedIn.get()) {
+      var profile = auth2.currentUser.get().getBasicProfile();
+      console.log('ID: ' + profile.getId());
+      console.log('Full Name: ' + profile.getName());
+      console.log('Given Name: ' + profile.getGivenName());
+      console.log('Family Name: ' + profile.getFamilyName());
+      console.log('Image URL: ' + profile.getImageUrl());
+      console.log('Email: ' + profile.getEmail());
+    }
 
-      /**
-       * Callback after api.js is loaded.
-       */
-      function gapiLoaded() {
-        gapi.load('client', initializeGapiClient);
-      }
 
-      /**
-       * Callback after the API client is loaded. Loads the
-       * discovery doc to initialize the API.
-       */
-      async function initializeGapiClient() {
-        await gapi.client.init({
-          apiKey: API_KEY,
-          clientId: CLIENT_ID,
-          discoveryDocs: [DISCOVERY_DOC],
-        });
-        gapiInited = true;
-        console.log("gapiInited", gapiInited);
-        maybeEnableButtons();
-      }
+    const token = gapi.client.getToken();
+    let url;
+    if (token !== null) {
+      console.log("token.access_token", token.access_token);
+      url = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token='+String(token.access_token);
+      console.log('url: ', url);
+    }
+    let response = await fetch(url);
+    let userjson;
+    console.log("response: ", response);
+    if (response.ok) { // if HTTP-status is 200-299
+      userjson = await response.json();
+      console.log('got user info json');
+    } else {
+      alert("HTTP-Error: " + response.status);
+    }
+    document.getElementById('userid').innerText = "hello" + userjson[0];
+    return;
+  }
 
-      /**
-       * Callback after Google Identity Services are loaded.
-       */
-      function gisLoaded() {
-        tokenClient = google.accounts.oauth2.initTokenClient({
-          client_id: CLIENT_ID,
-          scope: SCOPES,
-          callback: '', // defined later
-        });
-        gisInited = true;
-        maybeEnableButtons();
-      }
 
-      /**
-       * Enables user interaction after all libraries are loaded.
-       */
-      function maybeEnableButtons() {
-        if (gapiInited && gisInited) {
-          document.getElementById('authorize_button').style.visibility = 'visible';
-        }
-      }
-
-      /**
-       *  Sign in the user upon button click.
-       */
-      function handleAuthClick() {
-        tokenClient.callback = async (resp) => {
-          if (resp.error !== undefined) {
-            throw (resp);
-          }
-          document.getElementById('signout_button').style.visibility = 'visible';
-          document.getElementById('authorize_button').innerText = 'Refresh';
-          await listStudents();
-          //await getUserInfo();
-          //await handleCredentialResponse(resp);
-        };
-
-        if (gapi.client.getToken() === null) {
-          // Prompt the user to select a Google Account and ask for consent to share their data
-          // when establishing a new session.
-          tokenClient.requestAccessToken({prompt: 'consent'});
-        } else {
-          // Skip display of account chooser and consent dialog for an existing session.
-          tokenClient.requestAccessToken({prompt: ''});
-        }
-      }
-
-      /**
-       *  Sign out the user upon button click.
-       */
-      function handleSignoutClick() {
-        const token = gapi.client.getToken();
-        if (token !== null) {
-          google.accounts.oauth2.revoke(token.access_token);
-          gapi.client.setToken('');
-          document.getElementById('content').innerText = '';
-          document.getElementById('authorize_button').innerText = 'Authorize';
-          document.getElementById('signout_button').style.visibility = 'hidden';
-        }
-      }
-
-      async function getUserInfo() {
-        const token = gapi.client.getToken();
-        let url;
-        if (token !== null) {
-          console.log("token.access_token", token.access_token); 
-          url = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token='+String(token.access_token);
-          console.log('url: ', url);
-        }
-        let response = await fetch(url);
-        let userjson;
-        console.log("response: ", response);
-        if (response.ok) { // if HTTP-status is 200-299
-          userjson = await response.json();
-          console.log('got user info json'); 
-        } else {
-          alert("HTTP-Error: " + response.status);
-        }
-        document.getElementById('userid').innerText = "hello" + userjson[0];
-        return;
-      }
-      
-      
-      /**
-       * Print info from entrance form: 
-       * https://docs.google.com/spreadsheets/d/1deRIvPARlVQh55WMSI4a6YuJk-32rq-2eQz3_ctnuyE/edit?resourcekey#gid=1804370966
-       */
-      async function listStudents() {
-        let response;
-        try {
-          // Fetch first 10 files
-          response = await gapi.client.sheets.spreadsheets.values.get({
-            spreadsheetId: '1deRIvPARlVQh55WMSI4a6YuJk-32rq-2eQz3_ctnuyE',
-            range: 'Form Responses 1!A2:F',
-          });
-        } catch (err) {
-          document.getElementById('content').innerText = err.message;
-          return;
-        }
-        const range = response.result;
-        if (!range || !range.values || range.values.length == 0) {
-          document.getElementById('content').innerText = 'No values found.';
-          return;
-        }
-        // Flatten to string to display
-        const output = range.values.reduce(
+  /**
+   * Print info from entrance form:
+   * https://docs.google.com/spreadsheets/d/1deRIvPARlVQh55WMSI4a6YuJk-32rq-2eQz3_ctnuyE/edit?resourcekey#gid=1804370966
+   */
+  async function listStudents() {
+    let response;
+    try {
+      // Fetch first 10 files
+      response = await gapi.client.sheets.spreadsheets.values.get({
+        spreadsheetId: '1deRIvPARlVQh55WMSI4a6YuJk-32rq-2eQz3_ctnuyE',
+        range: 'Form Responses 1!A2:F',
+      });
+    } catch (err) {
+      document.getElementById('content').innerText = err.message;
+      return;
+    }
+    const range = response.result;
+    if (!range || !range.values || range.values.length == 0) {
+      document.getElementById('content').innerText = 'No values found.';
+      return;
+    }
+    // Flatten to string to display
+    const output = range.values.reduce(
             (str, row) => `${str}${row[0]}, ${row[1]},${row[2]},${row[3]},${row[4]}\n`,
             'Name, 1, 2, 3,4:\n');
-        document.getElementById('content').innerText = output;
-      }
-    </script>
-    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
-  </body>
+    document.getElementById('content').innerText = output;
+  }
+</script>
+<script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+<script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+</body>
 </html>
+Footer
