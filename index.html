@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
 </head>
 <body>
-<p>Entrance form list 3</p>
+<p>Entrance form list 2</p>
 
 <!--Add buttons to initiate auth sequence and sign out-->
 <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
@@ -28,7 +28,7 @@
 
   // Authorization scopes required by the API; multiple scopes can be
   // included, separated by spaces.
-  const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly https://www.googleapis.com/auth/userinfo.profile';
+  const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
 
   let tokenClient;
   let gapiInited = false;
@@ -49,7 +49,6 @@
    * discovery doc to initialize the API.
    */
   async function initializeGapiClient() {
-    await gapi.auth2.init({client_id: CLIENT_ID});
     await gapi.client.init({
       apiKey: API_KEY,
       discoveryDocs: [DISCOVERY_DOC],
@@ -119,27 +118,9 @@
     }
   }
   async function getUserInfo() {
-    if (auth2.isSignedIn.get()) {
-      var profile = auth2.currentUser.get().getBasicProfile();
-      console.log('ID: ' + profile.getId());
-      console.log('Full Name: ' + profile.getName());
-      console.log('Given Name: ' + profile.getGivenName());
-      console.log('Family Name: ' + profile.getFamilyName());
-      console.log('Image URL: ' + profile.getImageUrl());
-      console.log('Email: ' + profile.getEmail());
-    }
-
-
-    const token = gapi.client.getToken();
-    let url;
-    if (token !== null) {
-      console.log("token.access_token", token.access_token);
-      url = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token='+String(token.access_token);
-      console.log('url: ', url);
-    }
+    let url = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json';
     let response = await fetch(url);
     let userjson;
-    console.log("response: ", response);
     if (response.ok) { // if HTTP-status is 200-299
       userjson = await response.json();
       console.log('got user info json');
@@ -148,9 +129,8 @@
     }
     document.getElementById('userid').innerText = "hello" + userjson[0];
     return;
+
   }
-
-
   /**
    * Print info from entrance form:
    * https://docs.google.com/spreadsheets/d/1deRIvPARlVQh55WMSI4a6YuJk-32rq-2eQz3_ctnuyE/edit?resourcekey#gid=1804370966
@@ -179,8 +159,7 @@
     document.getElementById('content').innerText = output;
   }
 </script>
-<script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
 <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+<script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
 </body>
 </html>
-Footer
