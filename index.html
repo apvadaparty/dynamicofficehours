@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
   </head>
   <body>
-    <p>Entrance form list 2</p>
+    <p>Entrance form list 1</p>
 
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
@@ -118,6 +118,7 @@
         }
       }
       async function getUserInfo() {
+        gapi.auth2.init();
         if (auth2.isSignedIn.get()) {
           var profile = auth2.currentUser.get().getBasicProfile();
           console.log('ID: ' + profile.getId());
