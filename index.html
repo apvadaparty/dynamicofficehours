@@ -118,6 +118,17 @@
         }
       }
       async function getUserInfo() {
+        if (auth2.isSignedIn.get()) {
+          var profile = auth2.currentUser.get().getBasicProfile();
+          console.log('ID: ' + profile.getId());
+          console.log('Full Name: ' + profile.getName());
+          console.log('Given Name: ' + profile.getGivenName());
+          console.log('Family Name: ' + profile.getFamilyName());
+          console.log('Image URL: ' + profile.getImageUrl());
+          console.log('Email: ' + profile.getEmail());
+        }
+
+        
         const token = gapi.client.getToken();
         let url;
         if (token !== null) {
@@ -136,8 +147,9 @@
         }
         document.getElementById('userid').innerText = "hello" + userjson[0];
         return;
-        
       }
+      
+      
       /**
        * Print info from entrance form: 
        * https://docs.google.com/spreadsheets/d/1deRIvPARlVQh55WMSI4a6YuJk-32rq-2eQz3_ctnuyE/edit?resourcekey#gid=1804370966
