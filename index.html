@@ -97,7 +97,7 @@
         };
 
         if (gapi.client.getToken() === null) {
-          // P rompt the user to select a Google Account and ask for consent to share their data
+          // Prompt the user to select a Google Account and ask for consent to share their data
           // when establishing a new session.
           tokenClient.requestAccessToken({prompt: 'consent'});
         } else {
@@ -127,6 +127,7 @@
         var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
+        console.log("json: ", jsonPayload);
         let payload = JSON.parse(jsonPayload);
         console.log("json: ", payload);
         return payload;
