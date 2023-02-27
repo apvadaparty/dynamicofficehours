@@ -119,8 +119,14 @@
   }
   async function getUserInfo() {
     let url = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json';
+    if (token !== null) {
+      console.log("token.access_token", token.access_token);
+      url = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token='+String(token.access_token);
+      console.log('url: ', url);
+    }
     let response = await fetch(url);
     let userjson;
+
     if (response.ok) { // if HTTP-status is 200-299
       userjson = await response.json();
       console.log('got user info json');
