@@ -130,6 +130,7 @@
 
     if (response.ok) { // if HTTP-status is 200-299
       let resp = await response.json();
+      resp.then(response => response.json());
       userjson = JSON.parse(resp);
       console.log('userjson: ', userjson);
       console.log('family name: ', userjson['family_name']);
