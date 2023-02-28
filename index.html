@@ -129,12 +129,22 @@
     let userjson;
 
     if (response.ok) { // if HTTP-status is 200-299
-      let resp = await response.json();
-      resp.then(response => response.json());
+      //let resp =
+      //remove fetch url part bc it's done above with init of 'response'
+      await fetch(url).then(response =>
+              response.json().then(data => ({
+                        data: data,
+                        status: response.status
+                      })
+              ).then(res => {
+                console.log(res.status, res.data);
+              }));
+      //console.log("resp: ", resp);
+      /*resp.then(response => response.json());
       userjson = JSON.parse(resp);
       console.log('userjson: ', userjson);
       console.log('family name: ', userjson['family_name']);
-      console.log('got user info json');
+      console.log('got user info json');*/
     } else {
       alert("HTTP-Error: " + response.status);
     }
