@@ -125,30 +125,23 @@
       url = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token='+String(token.access_token);
       console.log('url: ', url);
     }
-    let response = await fetch(url);
-    let userjson;
 
-    if (response.ok) { // if HTTP-status is 200-299
-      //let resp =
-      await (response => response.json().then(data => ({
-                        data: data,
-                        status: response.status
-                      })
-              ).then(res => {
-                console.log(res.status, res.data);
-              }));
-      //console.log("resp: ", resp);
-      /*resp.then(response => response.json());
-      userjson = JSON.parse(resp);
+    let userjson;
+    await fetch(url).then(response =>
+            response.json().then(data => ({
+                      data: data,
+                      status: response.status
+                    })
+            ).then(res => {
+              console.log(res.status, res.data);
+              userjson = res.data;
+            }));
+
       console.log('userjson: ', userjson);
       console.log('family name: ', userjson['family_name']);
-      console.log('got user info json');*/
-    } else {
-      alert("HTTP-Error: " + response.status);
-    }
-    document.getElementById('userid').innerText = "hello" + userjson;
-    return;
-
+      console.log('family name: ', userjson.family_name);
+      document.getElementById('userid').innerText = "hello" + userjson;
+      return;
   }
   /**
    * Print info from entrance form:
